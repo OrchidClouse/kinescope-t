@@ -22,6 +22,16 @@ const InputContainer = styled.div`
   margin-top: 10px;
 `;
 
+const ListItemContent = styled.div<{ isSelected: boolean }>`
+  cursor: pointer;
+  background-color: ${(props) => (props.isSelected ? '#e0f7fa' : 'transparent')};
+  padding: 5px;
+  border: ${(props) => (props.isSelected ? '2px solid #00796b' : 'none')};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const Tree = () => {
   const [list, setList] = useState<ListItem>({
     id: 'root',
@@ -29,7 +39,7 @@ const Tree = () => {
     children: [],
   });
 
-  const [selectedId, setSelectedId] = useState<string | null>('root'); 
+  const [selectedId, setSelectedId] = useState<string | null>('root');
   const [newItemName, setNewItemName] = useState<string>('');
 
   const handleAddChild = () => {
@@ -88,10 +98,16 @@ const Tree = () => {
 
   const renderList = (item: ListItem, isRoot = false) => (
     <ListItemContainer key={item.id} isRoot={isRoot}>
-      <div>
-        <span onClick={() => setSelectedId(item.id)}>{item.name}</span>
-        {!isRoot && <Button onClick={() => handleDelete(item.id)}>Delete</Button>}
-      </div>
+      <ListItemContent
+        isSelected={item.id === selectedId}
+        onClick={() => setSelectedId(item.id)}
+      >
+        <span>{item.name}</span>
+        <span>
+          {item.id === selectedId && 'selected'}
+          {!isRoot && <Button onClick={() => handleDelete(item.id)}>Delete</Button>}
+        </span>
+      </ListItemContent>
       {item.children.length > 0 && item.children.map((child) => renderList(child))}
     </ListItemContainer>
   );
@@ -107,6 +123,7 @@ const Tree = () => {
         />
         <Button onClick={handleAddChild}>Add Child</Button>
       </InputContainer>
+      {selectedId && <div>Selected item ID: {selectedId}</div>}
     </div>
   );
 };
